@@ -1,0 +1,32 @@
+<div class="box-container">
+  <div class="light-gray-box">
+    <h1>Hi Tenant!</h1>
+    <input *ngIf="isConnected" type="text" class="connected-text-field" placeholder="Type the Lease Id"
+      (keydown.enter)="onEnter($event)">
+    <div *ngIf="isConnected && summary!=null" class="summary">
+      <h2>Summary</h2>
+      <p>Lease Id : {{ summary.id }}</p>
+      <p>leaseAmount : {{ summary.leaseAmount }}</p>
+      <p>dueAmount : {{ summary.dueAmount }}</p>
+      <p>leaseDuration : {{ summary.leaseDuration }}</p>
+      <p>secutrityDeposit : {{ summary.secutrityDeposit }}</p>
+      <p>leaseMaximumDue : {{ summary.leaseMaximumDue }}</p>
+      <p>illegalActivity : {{ summary.illegalActivity }}</p>
+      <p>damagedToProperty : {{ summary.damagedToProperty }}</p>
+      <p>leaseStartDate : {{ summary.leaseStartDate }}</p>
+      <p>leaseRenewalDate : {{ summary.leaseRenewalDate }}</p>
+      <p>landLoard : {{ summary.landLoard }}</p>
+      <p>tenant : {{ summary.tenant }}</p>
+      <p>leaseStatus : {{ summary.leaseStatus }}</p>
+      <p>requestStatus : {{ summary.requestStatus }}</p>
+      <p>evictionWarning : {{ summary.evictionWarning }}</p>
+
+      <button class="button" (click)="makePayment()">Make Payment</button>
+      <button class="button" (click)="requestRenewal()">Request Renewal</button>
+      <button class="button" (click)="requestTermination()">Request Termination</button>
+    </div>
+    <div class="container">
+      <button *ngIf="!isConnected" class="connect-wallet-button" (click)="connectWallet()">Connect Wallet</button>
+    </div>
+  </div>
+</div>

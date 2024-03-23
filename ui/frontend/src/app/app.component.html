@@ -1,0 +1,15 @@
+<div class="container">
+  <mat-menu #ownerMenu="matMenu">
+    <button mat-menu-item routerLink="/owner" routerLinkActive="active" ariaCurrentWhenActive="page">Owner</button>
+  </mat-menu>
+  <button mat-button [matMenuTriggerFor]="ownerMenu" class="tile-button">Owner</button>
+
+  <mat-menu #tenantMenu="matMenu">
+    <button mat-menu-item routerLink="/tenant" routerLinkActive="active" ariaCurrentWhenActive="page">Tenant</button>
+  </mat-menu>
+  <button mat-button [matMenuTriggerFor]="tenantMenu" class="tile-button">Tenant</button>
+</div>
+
+
+
+<router-outlet></router-outlet>

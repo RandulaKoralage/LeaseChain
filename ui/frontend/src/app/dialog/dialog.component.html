@@ -1,0 +1,30 @@
+<div class="dialog-container">
+  <h2 class="dialog-title">Start a New Lease</h2>
+  <form [formGroup]="form" class="form-container">
+    <mat-form-field class="form-field">
+      <input matInput formControlName="id" placeholder="Lease Id">
+    </mat-form-field>
+    <mat-form-field class="form-field">
+      <input matInput formControlName="leaseAmount" placeholder="Lease Amount">
+    </mat-form-field>
+    <mat-form-field class="form-field">
+      <input matInput formControlName="securityDeposit" placeholder="Security Deposit">
+    </mat-form-field>
+    <mat-form-field class="form-field">
+      <input matInput [matDatepicker]="startDatePicker" formControlName="leaseStartDate" placeholder="Lease Start Date">
+      <mat-datepicker-toggle matSuffix [for]="startDatePicker"></mat-datepicker-toggle>
+      <mat-datepicker #startDatePicker></mat-datepicker>
+    </mat-form-field>
+    <mat-form-field class="form-field">
+      <input matInput [matDatepicker]="renewalDatePicker" formControlName="leaseRenewalDate"
+        placeholder="Lease Renewal Date">
+      <mat-datepicker-toggle matSuffix [for]="renewalDatePicker"></mat-datepicker-toggle>
+      <mat-datepicker #renewalDatePicker></mat-datepicker>
+    </mat-form-field>
+
+    <div class="button-container">
+      <button mat-button class="submit-button" (click)="submit()">Submit</button>
+      <button mat-button class="cancel-button" (click)="cancel()">Cancel</button>
+    </div>
+  </form>
+</div>

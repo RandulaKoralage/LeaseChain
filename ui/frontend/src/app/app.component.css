@@ -1,0 +1,35 @@
+.connect-wallet-button {
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.connect-wallet-button:hover {
+  background-color: #0056b3;
+}
+
+.container {
+  display: flex;
+  justify-content: flex-end;
+  flex-direction: row-reverse;
+}
+
+.tile-button {
+  width: 100px;
+  height: 40px;
+  border: none;
+  border-radius: 2px;
+  background-color: #150e79;
+  color: #fff;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-left: 2px;
+  margin-top: 20px;
+}
