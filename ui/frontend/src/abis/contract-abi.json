@@ -1,0 +1,564 @@
+{
+  "types": [
+    {
+      "typeId": 0,
+      "type": "()",
+      "components": [],
+      "typeParameters": null
+    },
+    {
+      "typeId": 1,
+      "type": "b256",
+      "components": null,
+      "typeParameters": null
+    },
+    {
+      "typeId": 2,
+      "type": "bool",
+      "components": null,
+      "typeParameters": null
+    },
+    {
+      "typeId": 3,
+      "type": "enum Identity",
+      "components": [
+        {
+          "name": "Address",
+          "type": 8,
+          "typeArguments": null
+        },
+        {
+          "name": "ContractId",
+          "type": 10,
+          "typeArguments": null
+        }
+      ],
+      "typeParameters": null
+    },
+    {
+      "typeId": 4,
+      "type": "enum InvalidError",
+      "components": [
+        {
+          "name": "IncorrectAssetId",
+          "type": 9,
+          "typeArguments": null
+        },
+        {
+          "name": "NotEnoughTokens",
+          "type": 13,
+          "typeArguments": null
+        },
+        {
+          "name": "OnlyLandOwner",
+          "type": 3,
+          "typeArguments": null
+        },
+        {
+          "name": "LeaseIsNotActive",
+          "type": 5,
+          "typeArguments": null
+        },
+        {
+          "name": "RequestPending",
+          "type": 5,
+          "typeArguments": null
+        },
+        {
+          "name": "NoDueAmount",
+          "type": 13,
+          "typeArguments": null
+        }
+      ],
+      "typeParameters": null
+    },
+    {
+      "typeId": 5,
+      "type": "str",
+      "components": null,
+      "typeParameters": null
+    },
+    {
+      "typeId": 6,
+      "type": "str[1]",
+      "components": null,
+      "typeParameters": null
+    },
+    {
+      "typeId": 7,
+      "type": "str[2]",
+      "components": null,
+      "typeParameters": null
+    },
+    {
+      "typeId": 8,
+      "type": "struct Address",
+      "components": [
+        {
+          "name": "value",
+          "type": 1,
+          "typeArguments": null
+        }
+      ],
+      "typeParameters": null
+    },
+    {
+      "typeId": 9,
+      "type": "struct AssetId",
+      "components": [
+        {
+          "name": "value",
+          "type": 1,
+          "typeArguments": null
+        }
+      ],
+      "typeParameters": null
+    },
+    {
+      "typeId": 10,
+      "type": "struct ContractId",
+      "components": [
+        {
+          "name": "value",
+          "type": 1,
+          "typeArguments": null
+        }
+      ],
+      "typeParameters": null
+    },
+    {
+      "typeId": 11,
+      "type": "struct LeaseAgreement",
+      "components": [
+        {
+          "name": "id",
+          "type": 13,
+          "typeArguments": null
+        },
+        {
+          "name": "leaseAmount",
+          "type": 13,
+          "typeArguments": null
+        },
+        {
+          "name": "dueAmount",
+          "type": 13,
+          "typeArguments": null
+        },
+        {
+          "name": "leaseDuration",
+          "type": 12,
+          "typeArguments": null
+        },
+        {
+          "name": "secutrityDeposit",
+          "type": 13,
+          "typeArguments": null
+        },
+        {
+          "name": "leaseMaximumDue",
+          "type": 13,
+          "typeArguments": null
+        },
+        {
+          "name": "illegalActivity",
+          "type": 2,
+          "typeArguments": null
+        },
+        {
+          "name": "damagedToProperty",
+          "type": 2,
+          "typeArguments": null
+        },
+        {
+          "name": "leaseStartDate",
+          "type": 13,
+          "typeArguments": null
+        },
+        {
+          "name": "leaseRenewalDate",
+          "type": 13,
+          "typeArguments": null
+        },
+        {
+          "name": "landLoard",
+          "type": 3,
+          "typeArguments": null
+        },
+        {
+          "name": "tenant",
+          "type": 3,
+          "typeArguments": null
+        },
+        {
+          "name": "leaseStatus",
+          "type": 6,
+          "typeArguments": null
+        },
+        {
+          "name": "requestStatus",
+          "type": 7,
+          "typeArguments": null
+        },
+        {
+          "name": "evictionWarning",
+          "type": 2,
+          "typeArguments": null
+        }
+      ],
+      "typeParameters": null
+    },
+    {
+      "typeId": 12,
+      "type": "u32",
+      "components": null,
+      "typeParameters": null
+    },
+    {
+      "typeId": 13,
+      "type": "u64",
+      "components": null,
+      "typeParameters": null
+    }
+  ],
+  "functions": [
+    {
+      "inputs": [
+        {
+          "name": "agreement",
+          "type": 11,
+          "typeArguments": null
+        }
+      ],
+      "name": "add_lease",
+      "output": {
+        "name": "",
+        "type": 0,
+        "typeArguments": null
+      },
+      "attributes": [
+        {
+          "name": "storage",
+          "arguments": [
+            "read",
+            "write"
+          ]
+        }
+      ]
+    },
+    {
+      "inputs": [
+        {
+          "name": "lease_id",
+          "type": 13,
+          "typeArguments": null
+        }
+      ],
+      "name": "approve_renew_lease",
+      "output": {
+        "name": "",
+        "type": 11,
+        "typeArguments": null
+      },
+      "attributes": [
+        {
+          "name": "storage",
+          "arguments": [
+            "read",
+            "write"
+          ]
+        }
+      ]
+    },
+    {
+      "inputs": [
+        {
+          "name": "lease_id",
+          "type": 13,
+          "typeArguments": null
+        }
+      ],
+      "name": "approve_terminate_lease",
+      "output": {
+        "name": "",
+        "type": 11,
+        "typeArguments": null
+      },
+      "attributes": [
+        {
+          "name": "storage",
+          "arguments": [
+            "read",
+            "write"
+          ]
+        }
+      ]
+    },
+    {
+      "inputs": [
+        {
+          "name": "lease_id",
+          "type": 13,
+          "typeArguments": null
+        }
+      ],
+      "name": "get_leases",
+      "output": {
+        "name": "",
+        "type": 11,
+        "typeArguments": null
+      },
+      "attributes": [
+        {
+          "name": "storage",
+          "arguments": [
+            "read"
+          ]
+        }
+      ]
+    },
+    {
+      "inputs": [],
+      "name": "initialize_owner",
+      "output": {
+        "name": "",
+        "type": 3,
+        "typeArguments": null
+      },
+      "attributes": [
+        {
+          "name": "storage",
+          "arguments": [
+            "read",
+            "write"
+          ]
+        }
+      ]
+    },
+    {
+      "inputs": [
+        {
+          "name": "lease_id",
+          "type": 13,
+          "typeArguments": null
+        }
+      ],
+      "name": "pay_leases",
+      "output": {
+        "name": "",
+        "type": 0,
+        "typeArguments": null
+      },
+      "attributes": [
+        {
+          "name": "payable",
+          "arguments": []
+        },
+        {
+          "name": "storage",
+          "arguments": [
+            "read",
+            "write"
+          ]
+        }
+      ]
+    },
+    {
+      "inputs": [
+        {
+          "name": "lease_id",
+          "type": 13,
+          "typeArguments": null
+        }
+      ],
+      "name": "request_renew_lease",
+      "output": {
+        "name": "",
+        "type": 11,
+        "typeArguments": null
+      },
+      "attributes": [
+        {
+          "name": "storage",
+          "arguments": [
+            "read",
+            "write"
+          ]
+        }
+      ]
+    },
+    {
+      "inputs": [
+        {
+          "name": "lease_id",
+          "type": 13,
+          "typeArguments": null
+        }
+      ],
+      "name": "request_terminate_lease",
+      "output": {
+        "name": "",
+        "type": 11,
+        "typeArguments": null
+      },
+      "attributes": [
+        {
+          "name": "storage",
+          "arguments": [
+            "read",
+            "write"
+          ]
+        }
+      ]
+    },
+    {
+      "inputs": [],
+      "name": "withdraw_lease_funds",
+      "output": {
+        "name": "",
+        "type": 0,
+        "typeArguments": null
+      },
+      "attributes": [
+        {
+          "name": "storage",
+          "arguments": [
+            "read"
+          ]
+        }
+      ]
+    }
+  ],
+  "loggedTypes": [
+    {
+      "logId": 0,
+      "loggedType": {
+        "name": "",
+        "type": 4,
+        "typeArguments": []
+      }
+    },
+    {
+      "logId": 1,
+      "loggedType": {
+        "name": "",
+        "type": 4,
+        "typeArguments": []
+      }
+    },
+    {
+      "logId": 2,
+      "loggedType": {
+        "name": "",
+        "type": 4,
+        "typeArguments": []
+      }
+    },
+    {
+      "logId": 3,
+      "loggedType": {
+        "name": "",
+        "type": 4,
+        "typeArguments": []
+      }
+    },
+    {
+      "logId": 4,
+      "loggedType": {
+        "name": "",
+        "type": 5,
+        "typeArguments": null
+      }
+    },
+    {
+      "logId": 5,
+      "loggedType": {
+        "name": "",
+        "type": 4,
+        "typeArguments": []
+      }
+    },
+    {
+      "logId": 6,
+      "loggedType": {
+        "name": "",
+        "type": 4,
+        "typeArguments": []
+      }
+    },
+    {
+      "logId": 7,
+      "loggedType": {
+        "name": "",
+        "type": 4,
+        "typeArguments": []
+      }
+    },
+    {
+      "logId": 8,
+      "loggedType": {
+        "name": "",
+        "type": 4,
+        "typeArguments": []
+      }
+    },
+    {
+      "logId": 9,
+      "loggedType": {
+        "name": "",
+        "type": 4,
+        "typeArguments": []
+      }
+    },
+    {
+      "logId": 10,
+      "loggedType": {
+        "name": "",
+        "type": 4,
+        "typeArguments": []
+      }
+    },
+    {
+      "logId": 11,
+      "loggedType": {
+        "name": "",
+        "type": 4,
+        "typeArguments": []
+      }
+    },
+    {
+      "logId": 12,
+      "loggedType": {
+        "name": "",
+        "type": 4,
+        "typeArguments": []
+      }
+    },
+    {
+      "logId": 13,
+      "loggedType": {
+        "name": "",
+        "type": 5,
+        "typeArguments": null
+      }
+    },
+    {
+      "logId": 14,
+      "loggedType": {
+        "name": "",
+        "type": 4,
+        "typeArguments": []
+      }
+    },
+    {
+      "logId": 15,
+      "loggedType": {
+        "name": "",
+        "type": 4,
+        "typeArguments": []
+      }
+    }
+  ],
+  "messagesTypes": [],
+  "configurables": []
+}

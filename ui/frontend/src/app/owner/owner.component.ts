@@ -2,6 +2,8 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogComponent } from '../dialog/dialog.component';
+import { Fuel, FuelWalletConnector, FuelWalletLocked } from '@fuel-wallet/sdk';
+import { ContractAbi__factory, ContractAbi } from '../../contract'
 
 @Component({
   selector: 'app-owner',
@@ -13,15 +15,45 @@ import { DialogComponent } from '../dialog/dialog.component';
 export class OwnerComponent {
   isConnected = false
   noOfLeases = 0
+  CONTRACT_ID = "0xd4bb67159026a58719d98b242d0321867475305b1de4f65ad9c6ca0552c5d9be";
+  currentAcc = ""
+  contractO: ContractAbi | null = null;
+  fuel = new Fuel({
+    connectors: [new FuelWalletConnector()],
+  });
 
-  connectWallet() {
-    this.isConnected = true
+
+  async connectWallet() {
+    await this.fuel.hasConnector();
+    console.log("Connection state", await this.fuel.hasConnector());
+    await this.fuel.connect();
+    this.isConnected = await this.fuel.isConnected();
+    console.log("Connection state", this.isConnected);
+
+    const accounts = await this.fuel.accounts();
+    console.log("Accounts", accounts);
+    const currentAccount = await this.fuel.currentAccount();
+    this.currentAcc = currentAccount ? currentAccount : ""
+    console.log("Current Account", currentAccount);
+    const wallet = currentAccount != null ? await this.fuel.getWallet(currentAccount) : null
+
+    this.contractO = connectToContract(wallet, this.CONTRACT_ID)
+    console.log(this.contractO)
   }
+
   constructor(private dialog: MatDialog) { }
 
   openDialog() {
     const dialogRef = this.dialog.open(DialogComponent, {
       width: '400px',
+      data: { contractO: this.contractO ,landLoard : this.currentAcc }
     });
   }
+}
+function connectToContract(wallet: any, CONTRACT_ID: string) {
+  if (wallet) {
+    const contract = ContractAbi__factory.connect(CONTRACT_ID, wallet);
+    return contract;
+  }
+  return null;
 }
