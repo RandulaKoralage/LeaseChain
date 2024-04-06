@@ -26,4 +26,9 @@ With this tutorial, we will develop a full-stack DApp that has the following fea
    
 **Angular**: A popular typescript based frontend framework  
                                                
+-----
+#### Let's Begin!
 
+✅ [Contract for Lease Management Application](https://github.com/RandulaKoralage/LeaseChain/tree/master/contract)
+
+✅ [Lease App Frontend and Contract Function Integration](https://github.com/RandulaKoralage/LeaseChain/blob/master/ui/README.md)
