@@ -10,11 +10,11 @@ In this tutorial, we are focusing on integrating the sway smart contract into an
 
 ## Table of Contents
 
-- [Initiating Frontend Project](Initiating-Frontend-Project)
-- [Installing Fuel Libraries](Installing-Fuel-Libraries)
-    - [Generating Types from ABIs](Generating-Types-from-ABIs)
-- [Connecting the Fuel Wallet to App](Connecting-the-Fuel-Wallet-to-App)
-- [Accessing Contract Functions](Accessing-Contract-Functions)
+- [Initiating Frontend Project](https://github.com/RandulaKoralage/LeaseChain/blob/master/ui/README.md#initiating-frontend-project)
+- [Installing Fuel Libraries](https://github.com/RandulaKoralage/LeaseChain/blob/master/ui/README.md#installing-fuel-libraries)
+    - [Generating Types from ABIs](https://github.com/RandulaKoralage/LeaseChain/blob/master/ui/README.md#generating-types-from-abis)
+- [Connecting the Fuel Wallet to App](https://github.com/RandulaKoralage/LeaseChain/blob/master/ui/README.md#connecting-the-fuel-wallet-to-app)
+- [Accessing Contract Functions](https://github.com/RandulaKoralage/LeaseChain/blob/master/ui/README.md#accessing-contract-functions)
 
 ## Initiating Frontend Project
 The following steps are written assuming you have already installed Angular latest version on your machine. 
