@@ -4,9 +4,9 @@
 /* eslint-disable */
 
 /*
-  Fuels version: 0.73.0
-  Forc version: 0.49.2
-  Fuel-Core version: 0.22.0
+  Fuels version: 0.79.0
+  Forc version: 0.49.3
+  Fuel-Core version: 0.22.1
 */
 
 import { Interface, Contract, ContractFactory } from "fuels";
@@ -39,12 +39,12 @@ const _abi = {
       "components": [
         {
           "name": "Address",
-          "type": 8,
+          "type": 7,
           "typeArguments": null
         },
         {
           "name": "ContractId",
-          "type": 10,
+          "type": 9,
           "typeArguments": null
         }
       ],
@@ -56,12 +56,7 @@ const _abi = {
       "components": [
         {
           "name": "IncorrectAssetId",
-          "type": 9,
-          "typeArguments": null
-        },
-        {
-          "name": "NotEnoughTokens",
-          "type": 13,
+          "type": 8,
           "typeArguments": null
         },
         {
@@ -70,18 +65,23 @@ const _abi = {
           "typeArguments": null
         },
         {
+          "name": "OnlyTenant",
+          "type": 3,
+          "typeArguments": null
+        },
+        {
           "name": "LeaseIsNotActive",
-          "type": 5,
+          "type": 12,
           "typeArguments": null
         },
         {
           "name": "RequestPending",
-          "type": 5,
+          "type": 12,
           "typeArguments": null
         },
         {
           "name": "NoDueAmount",
-          "type": 13,
+          "type": 11,
           "typeArguments": null
         }
       ],
@@ -89,24 +89,18 @@ const _abi = {
     },
     {
       "typeId": 5,
-      "type": "str",
-      "components": null,
-      "typeParameters": null
-    },
-    {
-      "typeId": 6,
       "type": "str[1]",
       "components": null,
       "typeParameters": null
     },
     {
-      "typeId": 7,
+      "typeId": 6,
       "type": "str[2]",
       "components": null,
       "typeParameters": null
     },
     {
-      "typeId": 8,
+      "typeId": 7,
       "type": "struct Address",
       "components": [
         {
@@ -118,7 +112,7 @@ const _abi = {
       "typeParameters": null
     },
     {
-      "typeId": 9,
+      "typeId": 8,
       "type": "struct AssetId",
       "components": [
         {
@@ -130,7 +124,7 @@ const _abi = {
       "typeParameters": null
     },
     {
-      "typeId": 10,
+      "typeId": 9,
       "type": "struct ContractId",
       "components": [
         {
@@ -142,37 +136,37 @@ const _abi = {
       "typeParameters": null
     },
     {
-      "typeId": 11,
+      "typeId": 10,
       "type": "struct LeaseAgreement",
       "components": [
         {
           "name": "id",
-          "type": 13,
+          "type": 11,
           "typeArguments": null
         },
         {
           "name": "leaseAmount",
-          "type": 13,
+          "type": 11,
           "typeArguments": null
         },
         {
           "name": "dueAmount",
-          "type": 13,
+          "type": 11,
           "typeArguments": null
         },
         {
           "name": "leaseDuration",
-          "type": 12,
+          "type": 11,
           "typeArguments": null
         },
         {
           "name": "secutrityDeposit",
-          "type": 13,
+          "type": 11,
           "typeArguments": null
         },
         {
           "name": "leaseMaximumDue",
-          "type": 13,
+          "type": 11,
           "typeArguments": null
         },
         {
@@ -187,12 +181,12 @@ const _abi = {
         },
         {
           "name": "leaseStartDate",
-          "type": 13,
+          "type": 11,
           "typeArguments": null
         },
         {
           "name": "leaseRenewalDate",
-          "type": 13,
+          "type": 11,
           "typeArguments": null
         },
         {
@@ -207,12 +201,12 @@ const _abi = {
         },
         {
           "name": "leaseStatus",
-          "type": 6,
+          "type": 5,
           "typeArguments": null
         },
         {
           "name": "requestStatus",
-          "type": 7,
+          "type": 6,
           "typeArguments": null
         },
         {
@@ -224,14 +218,14 @@ const _abi = {
       "typeParameters": null
     },
     {
-      "typeId": 12,
-      "type": "u32",
+      "typeId": 11,
+      "type": "u64",
       "components": null,
       "typeParameters": null
     },
     {
-      "typeId": 13,
-      "type": "u64",
+      "typeId": 12,
+      "type": "u8",
       "components": null,
       "typeParameters": null
     }
@@ -241,14 +235,14 @@ const _abi = {
       "inputs": [
         {
           "name": "agreement",
-          "type": 11,
+          "type": 10,
           "typeArguments": null
         }
       ],
       "name": "add_lease",
       "output": {
         "name": "",
-        "type": 0,
+        "type": 11,
         "typeArguments": null
       },
       "attributes": [
@@ -265,14 +259,14 @@ const _abi = {
       "inputs": [
         {
           "name": "lease_id",
-          "type": 13,
+          "type": 11,
           "typeArguments": null
         }
       ],
       "name": "approve_renew_lease",
       "output": {
         "name": "",
-        "type": 11,
+        "type": 10,
         "typeArguments": null
       },
       "attributes": [
@@ -289,14 +283,14 @@ const _abi = {
       "inputs": [
         {
           "name": "lease_id",
-          "type": 13,
+          "type": 11,
           "typeArguments": null
         }
       ],
       "name": "approve_terminate_lease",
       "output": {
         "name": "",
-        "type": 11,
+        "type": 10,
         "typeArguments": null
       },
       "attributes": [
@@ -310,14 +304,8 @@ const _abi = {
       ]
     },
     {
-      "inputs": [
-        {
-          "name": "lease_id",
-          "type": 13,
-          "typeArguments": null
-        }
-      ],
-      "name": "get_leases",
+      "inputs": [],
+      "name": "get_count",
       "output": {
         "name": "",
         "type": 11,
@@ -333,19 +321,24 @@ const _abi = {
       ]
     },
     {
-      "inputs": [],
-      "name": "initialize_owner",
+      "inputs": [
+        {
+          "name": "lease_id",
+          "type": 11,
+          "typeArguments": null
+        }
+      ],
+      "name": "get_lease",
       "output": {
         "name": "",
-        "type": 3,
+        "type": 10,
         "typeArguments": null
       },
       "attributes": [
         {
           "name": "storage",
           "arguments": [
-            "read",
-            "write"
+            "read"
           ]
         }
       ]
@@ -354,7 +347,7 @@ const _abi = {
       "inputs": [
         {
           "name": "lease_id",
-          "type": 13,
+          "type": 11,
           "typeArguments": null
         }
       ],
@@ -382,14 +375,14 @@ const _abi = {
       "inputs": [
         {
           "name": "lease_id",
-          "type": 13,
+          "type": 11,
           "typeArguments": null
         }
       ],
       "name": "request_renew_lease",
       "output": {
         "name": "",
-        "type": 11,
+        "type": 10,
         "typeArguments": null
       },
       "attributes": [
@@ -406,14 +399,14 @@ const _abi = {
       "inputs": [
         {
           "name": "lease_id",
-          "type": 13,
+          "type": 11,
           "typeArguments": null
         }
       ],
       "name": "request_terminate_lease",
       "output": {
         "name": "",
-        "type": 11,
+        "type": 10,
         "typeArguments": null
       },
       "attributes": [
@@ -422,23 +415,6 @@ const _abi = {
           "arguments": [
             "read",
             "write"
-          ]
-        }
-      ]
-    },
-    {
-      "inputs": [],
-      "name": "withdraw_lease_funds",
-      "output": {
-        "name": "",
-        "type": 0,
-        "typeArguments": null
-      },
-      "attributes": [
-        {
-          "name": "storage",
-          "arguments": [
-            "read"
           ]
         }
       ]
@@ -481,8 +457,8 @@ const _abi = {
       "logId": 4,
       "loggedType": {
         "name": "",
-        "type": 5,
-        "typeArguments": null
+        "type": 4,
+        "typeArguments": []
       }
     },
     {
@@ -553,20 +529,12 @@ const _abi = {
       "logId": 13,
       "loggedType": {
         "name": "",
-        "type": 5,
-        "typeArguments": null
-      }
-    },
-    {
-      "logId": 14,
-      "loggedType": {
-        "name": "",
         "type": 4,
         "typeArguments": []
       }
     },
     {
-      "logId": 15,
+      "logId": 14,
       "loggedType": {
         "name": "",
         "type": 4,
@@ -580,11 +548,7 @@ const _abi = {
 
 const _storageSlots: StorageSlot[] = [
   {
-    "key": "de9090cb50e71c2588c773487d1da7066d0c719849a7e58dc8b6397a25c567c0",
-    "value": "0000000000000000000000000000000000000000000000000000000000000000"
-  },
-  {
-    "key": "de9090cb50e71c2588c773487d1da7066d0c719849a7e58dc8b6397a25c567c1",
+    "key": "f383b0ce51358be57daa3b725fe44acdb2d880604e367199080b4379c41bb6ed",
     "value": "0000000000000000000000000000000000000000000000000000000000000000"
   }
 ];
