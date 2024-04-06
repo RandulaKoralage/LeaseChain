@@ -10,14 +10,15 @@ use std::{
         this_balance,
     },
     hash::Hash,
+    logging::log,
 };
 
 enum InvalidError {
     IncorrectAssetId: AssetId,
-    NotEnoughTokens: u64,
     OnlyLandOwner: Identity,
-    LeaseIsNotActive: str,
-    RequestPending: str,
+    OnlyTenant: Identity,
+    LeaseIsNotActive: u8, //1
+    RequestPending: u8, // RR:2 TR:3
     NoDueAmount: u64,
 }
 
@@ -25,7 +26,7 @@ struct LeaseAgreement {
     id: u64,
     leaseAmount: u64,
     dueAmount: u64,
-    leaseDuration: u32,
+    leaseDuration: u64,
     secutrityDeposit: u64,
     leaseMaximumDue: u64,
     illegalActivity: bool,
@@ -40,20 +41,23 @@ struct LeaseAgreement {
 }
 
 storage {
-    // map of Lease IDs to Lease
+    // counter for total leases listed
+    lease_counter: u64 = 0,
+    // map of lease IDs to leases
     lease_map: StorageMap<u64, LeaseAgreement> = StorageMap {},
-    // owner of the contract
-    owner: Option<Identity> = Option::None,
 }
 
 abi LeaseHandler {
     //Land load can create a lease agreement
     #[storage(read, write)]
-    fn add_lease(agreement: LeaseAgreement);
+    fn add_lease(agreement: LeaseAgreement) -> u64;
 
-    //Tenent can search for his lease based on Lease ID
     #[storage(read)]
-    fn get_leases(lease_id: u64) -> LeaseAgreement;
+    fn get_lease(lease_id: u64) -> LeaseAgreement;
+
+    // return the number of leases listed
+    #[storage(read)]
+    fn get_count() -> u64;
 
     //Pay lease amount
     #[storage(read, write), payable]
@@ -74,27 +78,25 @@ abi LeaseHandler {
     //Terminate contract approve
     #[storage(read, write)]
     fn approve_terminate_lease(lease_id: u64) -> LeaseAgreement;
-
-    // Set the contract owner
-    #[storage(read, write)]
-    fn initialize_owner() -> Identity;
-
-    // Collect lease
-    #[storage(read)]
-    fn withdraw_lease_funds();
 }
 
 impl LeaseHandler for Contract {
     //Land load can create a lease agreement
     #[storage(read, write)]
-    fn add_lease(agreement: LeaseAgreement) {
+    fn add_lease(agreement: LeaseAgreement) -> u64 {
+        storage
+            .lease_counter
+            .write(storage.lease_counter.try_read().unwrap() + 1);
+
+        // get the message sender
         let sender = msg_sender().unwrap();
 
-        // configure the item
-        let new_agreement: LeaseAgreement = LeaseAgreement {
-            id: agreement.id,
+        // configure the lease
+        let durationInMonths = agreement.leaseDuration / 30;
+        let new_lease: LeaseAgreement = LeaseAgreement {
+            id: storage.lease_counter.try_read().unwrap(),
             leaseAmount: agreement.leaseAmount,
-            dueAmount: 0,
+            dueAmount: agreement.leaseAmount * durationInMonths,
             leaseDuration: agreement.leaseDuration,
             secutrityDeposit: agreement.secutrityDeposit,
             leaseMaximumDue: 30,
@@ -109,14 +111,116 @@ impl LeaseHandler for Contract {
             evictionWarning: false,
         };
 
-        // save the new item to storage using the counter value
-        storage.lease_map.insert(agreement.id, new_agreement);
+        // save the new lease to storage using the counter value
+        storage
+            .lease_map
+            .insert(storage.lease_counter.try_read().unwrap(), new_lease);
+        return storage.lease_counter.try_read().unwrap();
     }
 
-    //Tenent can search for his lease based on Lease ID
     #[storage(read)]
-    fn get_leases(lease_id: u64) -> LeaseAgreement {
+    fn get_lease(lease_id: u64) -> LeaseAgreement {
         return storage.lease_map.get(lease_id).try_read().unwrap();
+    }
+
+    #[storage(read)]
+    fn get_count() -> u64 {
+        return storage.lease_counter.try_read().unwrap();
+    }
+
+    //Request renew contract request
+    #[storage(read, write)]
+    fn request_renew_lease(lease_id: u64) -> LeaseAgreement {
+        let mut lease_agreement = storage.lease_map.get(lease_id).try_read().unwrap();
+        let sender = msg_sender().unwrap();
+        require(
+            sender == lease_agreement
+                .tenant,
+            InvalidError::OnlyTenant(sender),
+        );
+        require(
+            from_str_array(lease_agreement.leaseStatus) != "T",
+            InvalidError::LeaseIsNotActive(1),
+        );
+        require(
+            from_str_array(lease_agreement.requestStatus) != "RR",
+            InvalidError::RequestPending(2),
+        );
+        lease_agreement.requestStatus = __to_str_array("RR");
+        storage.lease_map.insert(lease_id, lease_agreement);
+        return lease_agreement;
+    }
+
+    //Request terminate contract request
+    #[storage(read, write)]
+    fn request_terminate_lease(lease_id: u64) -> LeaseAgreement {
+        let mut lease_agreement = storage.lease_map.get(lease_id).try_read().unwrap();
+        let sender = msg_sender().unwrap();
+        require(
+            sender == lease_agreement
+                .tenant,
+            InvalidError::OnlyTenant(sender),
+        );
+        require(
+            from_str_array(lease_agreement.leaseStatus) != "T",
+            InvalidError::LeaseIsNotActive(1),
+        );
+        require(
+            from_str_array(lease_agreement.requestStatus) != "TR",
+            InvalidError::RequestPending(3),
+        );
+        lease_agreement.requestStatus = __to_str_array("TR");
+        storage.lease_map.insert(lease_id, lease_agreement);
+        return lease_agreement;
+    }
+
+    //Renew contract approve
+    #[storage(read, write)]
+    fn approve_renew_lease(lease_id: u64) -> LeaseAgreement {
+        let mut lease_agreement = storage.lease_map.get(lease_id).try_read().unwrap();
+        let sender = msg_sender().unwrap();
+        require(
+            sender == lease_agreement
+                .landLoard,
+            InvalidError::OnlyLandOwner(sender),
+        );
+        require(
+            from_str_array(lease_agreement.leaseStatus) != "T",
+            InvalidError::LeaseIsNotActive(1),
+        );
+        require(
+            from_str_array(lease_agreement.requestStatus) == "RR",
+            InvalidError::RequestPending(2),
+        );
+        lease_agreement.requestStatus = __to_str_array("RA");
+        // lease_agreement.leaseRenewalDate = "RA"
+        storage.lease_map.insert(lease_id, lease_agreement);
+        return lease_agreement;
+    }
+
+    //Terminate contract approve
+    #[storage(read, write)]
+    fn approve_terminate_lease(lease_id: u64) -> LeaseAgreement {
+        let mut lease_agreement = storage.lease_map.get(lease_id).try_read().unwrap();
+        let sender = msg_sender().unwrap();
+        require(
+            sender == lease_agreement
+                .landLoard,
+            InvalidError::OnlyLandOwner(sender),
+        );
+        require(
+            from_str_array(lease_agreement.leaseStatus) != "T",
+            InvalidError::LeaseIsNotActive(1),
+        );
+        require(
+            from_str_array(lease_agreement.requestStatus) == "TR",
+            InvalidError::RequestPending(3),
+        );
+
+        lease_agreement.requestStatus = __to_str_array("TA");
+        lease_agreement.leaseStatus = __to_str_array("A");
+        storage.lease_map.insert(lease_id, lease_agreement);
+        return lease_agreement;
     }
 
     //Pay lease amount
@@ -129,134 +233,17 @@ impl LeaseHandler for Contract {
         let payment = msg_amount();
         require(
             from_str_array(lease_agreement.leaseStatus) != "T",
-            InvalidError::LeaseIsNotActive("Lease is Already in Terminate Status"),
+            InvalidError::LeaseIsNotActive(1),
         );
         require(dueAmount > 0, InvalidError::NoDueAmount(dueAmount));
-        require(
-            payment >= lease_agreement
-                .dueAmount,
-            InvalidError::NotEnoughTokens(payment),
-        );
         require(
             asset_id == BASE_ASSET_ID,
             InvalidError::IncorrectAssetId(asset_id),
         );
-        lease_agreement.dueAmount = lease_agreement.dueAmount - payment;
+        let balance = lease_agreement.dueAmount - payment;
+        lease_agreement.dueAmount = balance;
         storage.lease_map.insert(lease_id, lease_agreement);
 
         transfer(lease_agreement.landLoard, asset_id, payment);
-    }
-
-    //Request renew contract request
-    #[storage(read, write)]
-    fn request_renew_lease(lease_id: u64) -> LeaseAgreement {
-        let mut lease_agreement = storage.lease_map.get(lease_id).try_read().unwrap();
-        require(
-            from_str_array(lease_agreement.leaseStatus) != "T",
-            InvalidError::LeaseIsNotActive("Lease is Already in Terminate Status"),
-        );
-        require(
-            from_str_array(lease_agreement.requestStatus) != "RR",
-            InvalidError::RequestPending("Pending Renewal Request Available"),
-        );
-        lease_agreement.requestStatus = __to_str_array("RR");
-        storage.lease_map.insert(lease_id, lease_agreement);
-        return lease_agreement;
-    }
-
-    //Request terminate contract request
-    #[storage(read, write)]
-    fn request_terminate_lease(lease_id: u64) -> LeaseAgreement {
-        let mut lease_agreement = storage.lease_map.get(lease_id).try_read().unwrap();
-        require(
-            from_str_array(lease_agreement.leaseStatus) != "T",
-            InvalidError::LeaseIsNotActive("Lease is Already in Terminate Status"),
-        );
-        require(
-            from_str_array(lease_agreement.requestStatus) != "TR",
-            InvalidError::RequestPending("Pending Termination Request Available"),
-        );
-        lease_agreement.requestStatus = __to_str_array("TR");
-        storage.lease_map.insert(lease_id, lease_agreement);
-        return lease_agreement;
-    }
-
-    //Renew contract approve
-    #[storage(read, write)]
-    fn approve_renew_lease(lease_id: u64) -> LeaseAgreement {
-        let mut lease_agreement = storage.lease_map.get(lease_id).try_read().unwrap();
-        require(
-            from_str_array(lease_agreement.leaseStatus) != "T",
-            InvalidError::LeaseIsNotActive("Lease is Already in Terminate Status"),
-        );
-        require(
-            from_str_array(lease_agreement.requestStatus) == "RR",
-            InvalidError::RequestPending("No Renewal Request Available"),
-        );
-        lease_agreement.requestStatus = __to_str_array("RA");
-        // lease_agreement.leaseRenewalDate = "RA"
-        storage.lease_map.insert(lease_id, lease_agreement);
-        return lease_agreement;
-    }
-
-    //Terminate contract approve
-    #[storage(read, write)]
-    fn approve_terminate_lease(lease_id: u64) -> LeaseAgreement {
-        let mut lease_agreement = storage.lease_map.get(lease_id).try_read().unwrap();
-        require(
-            from_str_array(lease_agreement.leaseStatus) != "T",
-            InvalidError::LeaseIsNotActive("Lease is Already in Terminate Status"),
-        );
-        require(
-            from_str_array(lease_agreement.requestStatus) == "TR",
-            InvalidError::RequestPending("No Renewal Request Available"),
-        );
-        lease_agreement.requestStatus = __to_str_array("TA");
-        lease_agreement.leaseStatus = __to_str_array("A");
-        storage.lease_map.insert(lease_id, lease_agreement);
-        return lease_agreement;
-    }
-
-    // Set the contract owner
-    #[storage(read, write)]
-    fn initialize_owner() -> Identity {
-        let owner = storage.owner.try_read().unwrap();
-
-        // make sure the owner has NOT already been initialized
-        require(owner.is_none(), "owner already initialized");
-
-        // get the identity of the sender        
-        let sender = msg_sender().unwrap();
-        // set the owner to the sender's identity
-        storage.owner.write(Option::Some(sender));
-
-        // return the owner
-        return sender;
-    }
-
-    // Collect lease
-    #[storage(read)]
-    fn withdraw_lease_funds() {
-        let owner = storage.owner.try_read().unwrap();
-
-        // make sure the owner has been initialized
-        require(owner.is_some(), "owner not initialized");
-
-        let sender = msg_sender().unwrap();
-        // require the sender to be the owner
-        require(
-            sender == owner
-                .unwrap(),
-            InvalidError::OnlyLandOwner(sender),
-        );
-
-        // get the current balance of this contract for the base asset
-        let amount = this_balance(BASE_ASSET_ID);
-
-        // require the contract balance to be more than 0
-        require(amount > 0, InvalidError::NotEnoughTokens(amount));
-
-        // send the amount to the owner
-        transfer(owner.unwrap(), BASE_ASSET_ID, amount);
     }
 }
