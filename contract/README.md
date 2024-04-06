@@ -4,10 +4,10 @@
 ## Table of Contents
 
 - [Prerequisites](https://github.com/RandulaKoralage/LeaseChain/tree/master/contract#prerequisites)
-- [Structuring the Contract](https://github.com/RandulaKoralage/LeaseChain/edit/master/contract/README.md#structuring-the-contract)
-- [Application Binary Interface (ABI)](https://github.com/RandulaKoralage/LeaseChain/edit/master/contract/README.md#application-binary-interface-abi)
-- [Developing Contract](https://github.com/RandulaKoralage/LeaseChain/edit/master/contract/README.md#developing-contract)
-- [Deploying Contract](https://github.com/RandulaKoralage/LeaseChain/edit/master/contract/README.md#deploying-contract)
+- [Structuring the Contract](https://github.com/RandulaKoralage/LeaseChain/tree/master/contract/README.md#structuring-the-contract)
+- [Application Binary Interface (ABI)](https://github.com/RandulaKoralage/LeaseChain/tree/master/contract/README.md#application-binary-interface-abi)
+- [Developing Contract](https://github.com/RandulaKoralage/LeaseChain/tree/master/contract/README.md#developing-contract)
+- [Deploying Contract](https://github.com/RandulaKoralage/LeaseChain/tree/master/contract/README.md#deploying-contract)
 
 ## Prerequisites
 
