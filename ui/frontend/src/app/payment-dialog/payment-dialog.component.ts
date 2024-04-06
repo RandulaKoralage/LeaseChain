@@ -28,24 +28,33 @@ export class PaymentDialogComponent {
     console.log('Payment Amount:', this.data.leaseAmount);
     console.log('Sender:', this.data.landLoard);
     console.log('Lease Id ' + this.data.leaseId)
-    if (this.contractO != null) {
-      let value = await this.contractO.functions
-        .pay_leases(this.data.leaseId)
-        .txParams({
-          variableOutputs: 2,
-          gasPrice: 1,
-          gasLimit: 500_000,
-        })
-        .callParams({
-          forward: [this.data.leaseAmount, this.assetId],
-        })
-      .call()
 
-      this.snackBar.open('Transaction Id : ' + value.transactionId, 'Close', {
+    try {
+      if (this.contractO != null) {
+        let value = await this.contractO.functions
+          .pay_leases(this.data.leaseId)
+          .txParams({
+            variableOutputs: 2,
+            gasPrice: 1,
+            gasLimit: 500_000,
+          })
+          .callParams({
+            forward: [this.data.leaseAmount, this.assetId],
+          })
+          .call()
+
+        this.snackBar.open('Transaction Id : ' + value.transactionId, 'Close', {
+          duration: 3000,
+          panelClass: ['success-snackbar']
+        });
+      }
+    } catch {
+      this.snackBar.open('An exception occured', 'Close', {
         duration: 3000,
         panelClass: ['success-snackbar']
       });
     }
+
     this.dialogRef.close();
   }
 }

@@ -43,7 +43,7 @@ export class DialogComponent {
   }
   async submit() {
     if (this.form && this.form.valid) {
-      console.log(this.form.value);
+      /*Preparing data inputs*/
       const tenant = this.form.value.tenant;
       this.tenant = tenant ? { Address: { value: new Address(tenant).toB256() }, } : { Address: { value: "", } };
       const leaseStartDateValue = this.form.get('leaseStartDate');
@@ -56,6 +56,7 @@ export class DialogComponent {
       const differenceMs = Math.abs(date2.getTime() - date1.getTime());
       const differenceDays = Math.ceil(differenceMs / (1000 * 60 * 60 * 24));
 
+      /*Setting up Agreement Object in a way that fits with LeaseAgreement struct of contract*/
       let agreement = {
         id: 1,
         leaseAmount: this.form.value.leaseAmount,
@@ -74,58 +75,35 @@ export class DialogComponent {
         tenant: this.tenant
       }
 
-      console.log(agreement)
-
-      /* if (this.contractO != null) {
-         let value = await this.contractO.functions
-           .add_lease(agreement)
-           .callParams({
-             gasLimit: 1,
-           })
-           .txParams({
-             gasPrice: 1,
-             gasLimit: 256334,
-           }).call();
- 
-         console.log(value)
-         console.log(value.transactionId)
-         this.snackBar.open('Transaction Completed : '+value.transactionId, 'Close', {
-           duration: 2000,
-           panelClass: ['success-snackbar']
-         });*/
-
-      let agreement2 = {
-        id: this.form.value.id,
-        leaseAmount: this.form.value.leaseAmount,
-        leaseDuration: differenceDays,
-        leaseRenewalDate: leaseRenewalDateTimestamp,
-        leaseStatus: "A", // A T 
-        tenant: this.tenant
-      }
-      if (this.contractO != null) {
-        let value = await this.contractO.functions
-          .add_lease(agreement)
-          .txParams({
-            gasPrice: 1,
-            gasLimit: 500_000,
-          }).call()
-
-        // .call();
-        console.log("value")
-        console.log(value.value)
-        let formattedValue = new BN(value.value).toNumber();
-        console.log(formattedValue)
-        this.snackBar.open('Lease ID : ' + formattedValue, 'Close', {
+      /*Calling the contract function*/
+      try {
+        if (this.contractO != null) {
+          let value = await this.contractO.functions
+            .add_lease(agreement)
+            .txParams({
+              gasPrice: 1,
+              gasLimit: 500_000,
+            }).call()
+          let formattedValue = new BN(value.value).toNumber();
+          console.log(formattedValue)
+          this.snackBar.open('Lease ID : ' + formattedValue, 'Close', {
+            duration: 3000,
+            panelClass: ['success-snackbar']
+          })
+        }
+      } catch {
+        this.snackBar.open('Error Occured', 'Close', {
           duration: 3000,
           panelClass: ['success-snackbar']
         })
       }
-      
-      this.dialogRef.close();
-      }
-    }
 
-    cancel() {
+
       this.dialogRef.close();
     }
   }
+
+  cancel() {
+    this.dialogRef.close();
+  }
+}

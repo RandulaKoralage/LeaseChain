@@ -109,25 +109,6 @@ export class TenantComponent {
     if (event.key === 'Enter') {
       this.leaseId = event.target.value
       let response = await this.getLease(parseInt(event.target.value))
-
-      console.log("response" + response)
-
-      /*this.summary = {
-          damagedToProperty: false,
-          dueAmount: 0,
-          evictionWarning: "",
-          id: "100",
-          illegalActivity: false,
-          leaseAmount: "2000",
-          leaseDuration: 7,
-          leaseMaximumDue: 1600,
-          leaseRenewalDate: 1711737000000,
-          landLoard: "0xhsjdfhs2df4fdrf45fdf2df1dfd12r4erfer",
-          leaseStartDate: 1711132200000,
-          leaseStatus: "A",
-          requestStatus: "",
-          secutrityDeposit: 200
-        }*/
     }
   }
 
@@ -139,7 +120,6 @@ export class TenantComponent {
           gasPrice: 1,
           gasLimit: 500_000,
         }).call()
-
 
       this.summary = {
         damagedToProperty: value.value.damagedToProperty,
