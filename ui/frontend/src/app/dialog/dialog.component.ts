@@ -7,7 +7,8 @@ import { CommonModule } from '@angular/common';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { ContractAbi } from '../../contract';
 import { IdentityInput } from '../../contract/ContractAbi';
-import { Address, BaseAssetId } from 'fuels';
+import { Address, BN, BaseAssetId } from 'fuels';
+import { MatSnackBar } from '@angular/material/snack-bar';
 @Component({
   selector: 'app-dialog',
   templateUrl: './dialog.component.html',
@@ -27,10 +28,10 @@ export class DialogComponent {
   constructor(
     private dialogRef: MatDialogRef<DialogComponent>,
     @Inject(MAT_DIALOG_DATA) private data: any,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private snackBar: MatSnackBar
   ) {
     this.form = this.fb.group({
-      id: ['', Validators.required],
       leaseAmount: [null, [Validators.required, Validators.pattern(/^\d*\.?\d+$/)]],
       securityDeposit: [null, Validators.pattern(/^\d*\.?\d+$/)],
       tenant: [null, Validators.required],
@@ -56,7 +57,7 @@ export class DialogComponent {
       const differenceDays = Math.ceil(differenceMs / (1000 * 60 * 60 * 24));
 
       let agreement = {
-        id: this.form.value.id,
+        id: 1,
         leaseAmount: this.form.value.leaseAmount,
         dueAmount: 0.00,
         leaseDuration: differenceDays,
@@ -69,34 +70,62 @@ export class DialogComponent {
         leaseStatus: "A", // A T 
         requestStatus: "RA",//RR TR
         evictionWarning: false,
-        landLoard:tenant ? { Address: { value: new Address(this.data.landLoard).toB256()}, } : { Address: { value: "", } }  ,
+        landLoard: tenant ? { Address: { value: new Address(this.data.landLoard).toB256() }, } : { Address: { value: "", } },
         tenant: this.tenant
       }
 
-
       console.log(agreement)
 
+      /* if (this.contractO != null) {
+         let value = await this.contractO.functions
+           .add_lease(agreement)
+           .callParams({
+             gasLimit: 1,
+           })
+           .txParams({
+             gasPrice: 1,
+             gasLimit: 256334,
+           }).call();
+ 
+         console.log(value)
+         console.log(value.transactionId)
+         this.snackBar.open('Transaction Completed : '+value.transactionId, 'Close', {
+           duration: 2000,
+           panelClass: ['success-snackbar']
+         });*/
+
+      let agreement2 = {
+        id: this.form.value.id,
+        leaseAmount: this.form.value.leaseAmount,
+        leaseDuration: differenceDays,
+        leaseRenewalDate: leaseRenewalDateTimestamp,
+        leaseStatus: "A", // A T 
+        tenant: this.tenant
+      }
       if (this.contractO != null) {
         let value = await this.contractO.functions
           .add_lease(agreement)
-          .callParams({
-            gasLimit: 1,
-          })
           .txParams({
             gasPrice: 1,
-            gasLimit: 256334,
-          }).call();
+            gasLimit: 500_000,
+          }).call()
 
-        console.log(value)
-        // let formattedValue = new BN(value).toNumber();
-        //   console.log(formattedValue)
+        // .call();
+        console.log("value")
+        console.log(value.value)
+        let formattedValue = new BN(value.value).toNumber();
+        console.log(formattedValue)
+        this.snackBar.open('Lease ID : ' + formattedValue, 'Close', {
+          duration: 3000,
+          panelClass: ['success-snackbar']
+        })
       }
+      
+      this.dialogRef.close();
+      }
+    }
 
+    cancel() {
       this.dialogRef.close();
     }
   }
-
-  cancel() {
-    this.dialogRef.close();
-  }
-}

@@ -18,8 +18,8 @@ export class TenantComponent {
   isConnected = false
   summary: any = null
   wallet = ""
-  CONTRACT_ID = "0xd4bb67159026a58719d98b242d0321867475305b1de4f65ad9c6ca0552c5d9be";
-
+  CONTRACT_ID = "0x33b8f3bdaac096179f3ee3bc7ec095187552b601078ee802375612391387cd87";
+  leaseId: string = ''
   contractO: ContractAbi | null = null;
   fuel = new Fuel({
     connectors: [new FuelWalletConnector()],
@@ -49,62 +49,116 @@ export class TenantComponent {
 
   makePayment() {
     const dialogRef = this.dialog.open(PaymentDialogComponent, {
-      data: { leaseAmount: this.summary.leaseAmount, landLoard: this.summary.landLoard }
+      data: { leaseAmount: this.summary.dueAmount, landLoard: this.summary.landLoard, contractO: this.contractO, leaseId: this.leaseId }
     });
   }
-  requestRenewal(): void {
-    this.snackBar.open('Renewal Requested', 'Close', {
-      duration: 2000,
-      panelClass: ['success-snackbar']
-    });
+  async requestRenewal(): Promise<void> {
+    console.log('Lease ID entered:', this.leaseId);
+    try {
+      if (this.contractO != null) {
+        let value = await this.contractO.functions
+          .request_renew_lease(this.leaseId)
+          .txParams({
+            gasPrice: 1,
+            gasLimit: 500_000,
+          }).call()
+
+        console.log(value)
+        console.log(value.value)
+        this.snackBar.open('Renewal Requested. Status : ' + value.value.requestStatus, 'Close', {
+          duration: 3000,
+          panelClass: ['success-snackbar']
+        });
+      }
+    } catch (_e) {
+      console.log(_e)
+      this.snackBar.open('Validation Error Occured. Lease May be already terminated or renewal pending', 'Close', {
+        duration: 3000,
+        panelClass: ['success-snackbar']
+      });
+    }
+
+
   }
-  requestTermination(): void {
-    this.snackBar.open('Termination Requested', 'Close', {
-      duration: 2000,
-      panelClass: ['success-snackbar']
-    });
+
+  async requestTermination(): Promise<void> {
+    try {
+      if (this.contractO != null) {
+        let value = await this.contractO.functions
+          .request_terminate_lease(this.leaseId)
+          .txParams({
+            gasPrice: 1,
+            gasLimit: 500_000,
+          }).call()
+
+        this.snackBar.open('Termination Requested. Status : ' + value.value.requestStatus, 'Close', {
+          duration: 3000,
+          panelClass: ['success-snackbar']
+        });
+      }
+    } catch {
+      this.snackBar.open('Validation Error Occured. Lease May be already terminated or  termination request pending', 'Close', {
+        duration: 3000,
+        panelClass: ['success-snackbar']
+      });
+    }
+
   }
 
   async onEnter(event: any) {
     if (event.key === 'Enter') {
-      console.log(typeof(event.target.value))
-        let response = await this.getLease(parseInt(event.target.value))
-        
-        console.log("response"+ response)
-     
-    /*  this.summary = {
-        damagedToProperty: false,
-        dueAmount: 0,
-        evictionWarning: "",
-        id: "100",
-        illegalActivity: false,
-        leaseAmount: "2000",
-        leaseDuration: 7,
-        leaseMaximumDue: 1600,
-        leaseRenewalDate: 1711737000000,
-        landLoard: "0xhsjdfhs2df4fdrf45fdf2df1dfd12r4erfer",
-        leaseStartDate: 1711132200000,
-        leaseStatus: "A",
-        requestStatus: "",
-        secutrityDeposit: 200
-      }*/
+      this.leaseId = event.target.value
+      let response = await this.getLease(parseInt(event.target.value))
+
+      console.log("response" + response)
+
+      /*this.summary = {
+          damagedToProperty: false,
+          dueAmount: 0,
+          evictionWarning: "",
+          id: "100",
+          illegalActivity: false,
+          leaseAmount: "2000",
+          leaseDuration: 7,
+          leaseMaximumDue: 1600,
+          leaseRenewalDate: 1711737000000,
+          landLoard: "0xhsjdfhs2df4fdrf45fdf2df1dfd12r4erfer",
+          leaseStartDate: 1711132200000,
+          leaseStatus: "A",
+          requestStatus: "",
+          secutrityDeposit: 200
+        }*/
     }
   }
 
   async getLease(leaseId: number) {
-    console.log(typeof(leaseId))
     if (this.contractO != null) {
       let value = await this.contractO.functions
-        .get_leases(leaseId)
+        .get_lease(leaseId)
         .txParams({
-          gasPrice: 10,
-          gasLimit: 256334,
-        }).call();
-        console.log("value")
-      console.log(value)
+          gasPrice: 1,
+          gasLimit: 500_000,
+        }).call()
+
+
+      this.summary = {
+        damagedToProperty: value.value.damagedToProperty,
+        dueAmount: new BN(value.value.dueAmount).toNumber(),
+        evictionWarning: value.value.evictionWarning,
+        id: new BN(value.value.id).toNumber(),
+        illegalActivity: value.value.illegalActivity,
+        leaseAmount: new BN(value.value.leaseAmount).toNumber(),
+        leaseDuration: new BN(value.value.leaseDuration).toNumber(),
+        leaseMaximumDue: new BN(value.value.leaseMaximumDue).toNumber(),
+        leaseRenewalDate: new BN(value.value.leaseRenewalDate).toNumber(),
+        landLoard: value.value.landLoard.Address?.value,
+        leaseStartDate: new BN(value.value.leaseStartDate).toNumber(),
+        leaseStatus: value.value.leaseStatus,
+        requestStatus: value.value.requestStatus,
+        secutrityDeposit: new BN(value.value.secutrityDeposit).toNumber(),
+        tenant: value.value.tenant.Address?.value,
+      }
       return value
-      // let formattedValue = new BN(value).toNumber();
-      //   console.log(formattedValue)
     } else {
       return null
     }

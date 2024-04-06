@@ -15,7 +15,7 @@ import { ContractAbi__factory, ContractAbi } from '../../contract'
 export class OwnerComponent {
   isConnected = false
   noOfLeases = 0
-  CONTRACT_ID = "0xd4bb67159026a58719d98b242d0321867475305b1de4f65ad9c6ca0552c5d9be";
+  CONTRACT_ID = "0x33b8f3bdaac096179f3ee3bc7ec095187552b601078ee802375612391387cd87";
   currentAcc = ""
   contractO: ContractAbi | null = null;
   fuel = new Fuel({
